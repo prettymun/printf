@@ -5,93 +5,115 @@
 #include <limits.h>
 #include <unistd.h>
 
-void print_binary_recursive(unsigned int num, int *count){
+/**
+ * print_binary_recursive - Recursively print the binary representation of a number.
+ * @num: The number to print in binary.
+ * @count: Pointer to the counter of characters written.
+ */
+void print_binary_recursive(unsigned int num, int *count)
+{
+char digit;
 
-	char digit;
-    
-	if (num > 1) {
-	print_binary_recursive(num / 2, count);
-	}
-	digit = '0' + (num % 2);
-	write(1, &digit, 1);
-	(*count)++;
-	}
+if (num > 1)
+print_binary_recursive(num / 2, count);
+digit = '0' + (num % 2);
+write(1, &digit, 1);
+(*count)++;
+}
+
+/**
+ * _printf - Custom printf function with limited functionality.
+ * @format: The format string.
+ * @...: Arguments for format specifiers.
+ *
+ * Return: The number of characters written.
+ */
+
 int _printf(const char *format, ...)
 {
-	va_list args;
-	int count = 0;
-	char num_str[12];
-	int digit_count = 0;
- 
-	va_start(args, format);
-	while (*format != '\0') 
-		if (*format == '%'){
-			format++;
-			switch (*format) {
-                	case 'c': {
-                    	char c = (char) va_arg(args, int);
-                    	write(1, &c, 1);
-                    	count++;
-                    	break;
-                	}
+va_list args;
+int count = 0;
+char num_str[12];
+int digit_count = 0;
 
-                	case 's': {
-                   	const char *str = va_arg(args, const char *);
-                    	while (*str != '\0') {
-                        write(1, str, 1);
-                        str++;
-                        count++;
-                    	}
-                    	break;
-                	}
+va_start(args, format);
+while (*format != '\0')
+{
+if (*format == '%')
+{
+format++;
+switch (*format)
+{
+/*Cases for 'c', 's', 'd', 'i', 'b', '%'*/
+case 'c': {
+char c = (char) va_arg(args, int);
+write(1, &c, 1);
+count++;
+break;
+				
+}
+case 's': {
+const char *str = va_arg(args, const char *);
+while (*str != '\0')
+{
+write(1, str, 1);
+str++;
+count++;
+}
+break;
+}
 
-                	case 'd':
-                	case 'i': {
-                    	int num = va_arg(args, int);
-                    	if (num < 0) {
-                        	char minus = '-';
-                       		write(1, &minus, 1);
-                        	count++;
-                        	num = -num;
-                    	}
-                   
-                    	do {
-                        	num_str[digit_count++] = '0' + (num % 10);
-                        	num /= 10;
-                    	} while (num > 0);
-                    	while (digit_count > 0) {
-                        	write(1, &num_str[--digit_count], 1);
-                        	count++;
-                    	}
-                    	break;
-                	}
+case 'd':
+case 'i': { 
+int num = va_arg(args, int);
+if (num < 0)
+{
+char minus = '-';
+write(1, &minus, 1);
+count++;
+num = -num;
+}
 
-			case 'b': {
-                    	unsigned int num = va_arg(args, unsigned int);
-                    	print_binary_recursive(num, &count);
-                   	break;
-                	}
+do
+{
+num_str[digit_count++] = '0' + (num % 10);
+num /= 10;
+} while (num > 0);
+while (digit_count > 0)
+{
+write(1, &num_str[--digit_count], 1);
+count++;
+}
+break;
+}
 
-                	case '%': {
-                    	char percent = '%';
-                    	write(1, &percent, 1);
-                    	count++;
-                    	break;
-                	}
+case 'b': {
+unsigned int num = va_arg(args, unsigned int);
+print_binary_recursive(num, &count);
+break;
+}
 
-                	default: {
-                    	write(1, format, 1);
-                    	count++;
-                    	break;                }
-            	}
-        	} else {
-            	write(1, format, 1);
-            	count++;
-        	}
+case '%': {
+char percent = '%';
+write(1, &percent, 1);
+count++;
+break;
+}
 
-        	format++;
-    	}
-
-    	va_end(args);
-    	return count;
-	}
+default: {
+write(1, format, 1);
+count++;
+break;
+}
+}
+}
+else
+{
+write(1, format, 1);
+count++;
+}
+format++;
+}
+va_end(args);
+return (count);
+}
